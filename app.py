@@ -27,6 +27,11 @@ def add_cors_headers(response):
     return response
 
 
+@app.route('/', methods=['GET'])
+def home():
+    return 'Chatbot Server is running!'
+
+
 @app.route('/chat', methods=['POST'])
 def chat():
     data = request.form
@@ -74,4 +79,4 @@ def Gemini_response(user_message, context, model_name, image_path=None, api_key=
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(host='0.0.0.0', debug=True)
