@@ -3,10 +3,9 @@ from flask import Flask, request, jsonify
 import google.generativeai as genai
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
-from PIL import Image
+import PIL.Image
 
 load_dotenv()
-
 app = Flask(__name__)
 
 AVAILABLE_MODELS = [
@@ -18,9 +17,6 @@ AVAILABLE_MODELS = [
 
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
 
 
 @app.after_request
@@ -42,7 +38,6 @@ def chat():
     file = request.files.get('file')
     if not data or 'message' not in data or 'model' not in data:
         return jsonify({'error': 'Invalid request: message and model fields are required'}), 400
-
     user_message = data['message']
     context = data.get('context', '')
     model_name = data['model']
@@ -63,19 +58,17 @@ def Gemini_response(user_message, context, model_name, image_path=None, api_key=
     try:
         if not api_key:
             return "API Key is missing", None
-
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel(model_name)
         chat = model.start_chat(history=[])
 
         if image_path:
-            img = Image.open(image_path)
+            img = PIL.Image.open(image_path)
             inputs = [user_message, img]
             response = model.generate_content(inputs, stream=False)
             chatbot_response = response.text
             return chatbot_response, image_path
-
-        user_message_with_context = f"{user_message}\n{context}"
+        user_message_with_context = user_message + "\n" + context
         response = chat.send_message(user_message_with_context, stream=False)
         chatbot_response = response.text
         return chatbot_response, None
@@ -84,4 +77,6 @@ def Gemini_response(user_message, context, model_name, image_path=None, api_key=
 
 
 if __name__ == '__main__':
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
     app.run(host='0.0.0.0', debug=True)
