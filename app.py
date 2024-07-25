@@ -18,6 +18,10 @@ AVAILABLE_MODELS = [
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# Ensure the uploads directory exists
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
 
 @app.after_request
 def add_cors_headers(response):
@@ -77,6 +81,4 @@ def Gemini_response(user_message, context, model_name, image_path=None, api_key=
 
 
 if __name__ == '__main__':
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.makedirs(UPLOAD_FOLDER)
     app.run(host='0.0.0.0', debug=True)
