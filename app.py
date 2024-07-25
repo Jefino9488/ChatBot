@@ -23,6 +23,18 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 
+def clear_uploads_folder(max_files=3):
+    files = os.listdir(UPLOAD_FOLDER)
+    if len(files) > max_files:
+        files_to_delete = files[:-max_files]
+        for file in files_to_delete:
+            file_path = os.path.join(UPLOAD_FOLDER, file)
+            try:
+                os.remove(file_path)
+            except Exception as e:
+                print(f"Error deleting file {file_path}: {e}")
+
+
 @app.after_request
 def add_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
@@ -38,6 +50,8 @@ def home():
 
 @app.route('/chat', methods=['POST'])
 def chat():
+    clear_uploads_folder()
+
     data = request.form
     file = request.files.get('file')
     if not data or 'message' not in data or 'model' not in data:
