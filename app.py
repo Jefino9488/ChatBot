@@ -77,7 +77,13 @@ def Gemini_response(user_message, context, model_name, image_path=None, api_key=
         if not api_key:
             return "API Key is missing", None
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel(model_name)
+        model = genai.GenerativeModel(
+            model_name,
+            system_instruction="Keep conversation small and simple.",
+            generation_config={
+                "temperature": 0.7,
+            }
+        )
         chat = model.start_chat(history=[])
 
         if image_path:
