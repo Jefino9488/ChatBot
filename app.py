@@ -101,4 +101,4 @@ def Gemini_response(user_message, context, model_name, image_path=None, api_key=
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(debug=True)
